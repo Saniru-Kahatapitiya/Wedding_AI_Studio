@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import PhotoBlend from './PhotoBlend';
 
 function App() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [generatedImage, setGeneratedImage] = useState('');
-  const [analysis, setAnalysis] = useState('');
-  const [note, setNote] = useState('');
+  const [mode, setMode] = useState('single'); // 'single' or 'blend'
+  const [currentStep, setCurrentStep] = useState(1);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [generatedImage, setGeneratedImage] = useState('');
+  const [analysis, setAnalysis] = useState('');
+  const [note, setNote] = useState('');
 
-  // Dropdown options
+  // Dropdown options
   const [selectedOptions, setSelectedOptions] = useState({
     theme: '',
     lighting: ''
@@ -81,43 +83,43 @@ function App() {
   const howItWorksRef = useRef(null);
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadedImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-      setError('');
-    }
-  };
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
+  };
 
-  const handleOptionChange = (category, value) => {
-    console.log(`Option changed: ${category} = ${value}`);
-    setSelectedOptions(prev => {
-      const newOptions = {
-        ...prev,
-        [category]: value
-      };
-      console.log('New selected options:', newOptions);
-      return newOptions;
-    });
-  };
+  const handleOptionChange = (category, value) => {
+    console.log(`Option changed: ${category} = ${value}`);
+    setSelectedOptions(prev => {
+      const newOptions = {
+        ...prev,
+        [category]: value
+      };
+      console.log('New selected options:', newOptions);
+      return newOptions;
+    });
+  };
 
-  const handleNext = () => {
-    if (currentStep === 1 && !uploadedImage) {
-      setError('Please upload an image first');
-      return;
-    }
-    setCurrentStep(2);
-    setError('');
-  };
+  const handleNext = () => {
+    if (currentStep === 1 && !uploadedImage) {
+      setError('Please upload an image first');
+      return;
+    }
+    setCurrentStep(2);
+    setError('');
+  };
 
   const handleBack = () => {
-    setCurrentStep(1);
-    setError('');
-  };
+    setCurrentStep(1);
+    setError('');
+  };
 
   const scrollToSection = (ref) => {
     if (ref?.current) {
@@ -188,13 +190,13 @@ Enhance this wedding photo so it feels cohesive with the selected theme and ligh
     }
 
     console.log('Starting generation process...');
-    setLoading(true);
-    setError('');
+    setLoading(true);
+    setError('');
     setGeneratedImage('');
     setAnalysis('');
     setNote('');
 
-    try {
+    try {
       const formData = new FormData();
       formData.append('image', uploadedImage);
       formData.append('prompt', prompt);
@@ -229,47 +231,47 @@ Enhance this wedding photo so it feels cohesive with the selected theme and ligh
     } catch (err) {
       console.error('Error during enhancement:', err);
       setError(err.message || 'Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-      console.log('Generation process finished');
-    }
-  };
+    } finally {
+      setLoading(false);
+      console.log('Generation process finished');
+    }
+  };
 
-  const resetApp = () => {
-    setCurrentStep(1);
-    setUploadedImage(null);
-    setImagePreview('');
-    setGeneratedImage('');
-    setAnalysis('');
-    setNote('');
-    setSelectedOptions({
+  const resetApp = () => {
+    setCurrentStep(1);
+    setUploadedImage(null);
+    setImagePreview('');
+    setGeneratedImage('');
+    setAnalysis('');
+    setNote('');
+    setSelectedOptions({
       theme: '',
       lighting: ''
-    });
-    setError('');
-  };
+    });
+    setError('');
+  };
 
-  // Monitor state changes for debugging
-  useEffect(() => {
-    console.log('State updated:', {
-      currentStep,
-      uploadedImage: !!uploadedImage,
-      imagePreview: !!imagePreview,
-      loading,
-      error,
-      generatedImage: !!generatedImage,
-      analysis: !!analysis,
-      selectedOptions
-    });
-  }, [currentStep, uploadedImage, imagePreview, loading, error, generatedImage, analysis, selectedOptions]);
+  // Monitor state changes for debugging
+  useEffect(() => {
+    console.log('State updated:', {
+      currentStep,
+      uploadedImage: !!uploadedImage,
+      imagePreview: !!imagePreview,
+      loading,
+      error,
+      generatedImage: !!generatedImage,
+      analysis: !!analysis,
+      selectedOptions
+    });
+  }, [currentStep, uploadedImage, imagePreview, loading, error, generatedImage, analysis, selectedOptions]);
 
   const selectedCount = Object.values(selectedOptions).filter(value => value !== '').length;
 
-  return (
+  return (
     <div className="App">
       {/* Animated Background */}
       <div className="bg-gradient"></div>
-      
+
       {/* Header with modern design */}
       <header className="header">
         <div className="header-content">
@@ -309,6 +311,26 @@ Enhance this wedding photo so it feels cohesive with the selected theme and ligh
               Upload your favorite wedding photo, describe the vibe you want, and let our dual AI
               pipeline (Gemini + DALL·E) elevate lighting, color, and storytelling automatically.
             </p>
+            <div className="mode-switcher">
+              <button
+                className={`mode-btn ${mode === 'single' ? 'active' : ''}`}
+                onClick={() => setMode('single')}
+              >
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Single Photo
+              </button>
+              <button
+                className={`mode-btn ${mode === 'blend' ? 'active' : ''}`}
+                onClick={() => setMode('blend')}
+              >
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+                </svg>
+                Photo Blend
+              </button>
+            </div>
             <div className="hero-actions">
               <button className="btn btn-secondary" onClick={handleExplore}>
                 How it works
@@ -387,256 +409,262 @@ Enhance this wedding photo so it feels cohesive with the selected theme and ligh
 
       {/* Main Content */}
       <main className="main-content">
-        {currentStep === 1 && (
-          <div className="upload-section fade-in" ref={uploadSectionRef} id="upload-section">
-            <div className="section-header">
-              <h2>Upload Your Wedding Photo</h2>
-              <p>Choose a beautiful moment to enhance</p>
-            </div>
+        {mode === 'blend' ? (
+          <PhotoBlend onBack={() => setMode('single')} />
+        ) : (
+          <>
+            {currentStep === 1 && (
+              <div className="upload-section fade-in" ref={uploadSectionRef} id="upload-section">
+                <div className="section-header">
+                  <h2>Upload Your Wedding Photo</h2>
+                  <p>Choose a beautiful moment to enhance</p>
+                </div>
 
-            <div className="upload-area">
-              {!imagePreview ? (
-                <label htmlFor="image-upload" className="upload-zone">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    id="image-upload"
-                    className="upload-input"
-                  />
-                  <div className="upload-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <div className="upload-area">
+                  {!imagePreview ? (
+                    <label htmlFor="image-upload" className="upload-zone">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        id="image-upload"
+                        className="upload-input"
+                      />
+                      <div className="upload-icon">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <h3>Drop your photo here</h3>
+                      <p>or click to browse</p>
+                      <span className="upload-hint">Supports: JPG, PNG, WEBP</span>
+                    </label>
+                  ) : (
+                    <div className="preview-container">
+                      <div className="preview-card">
+                        <img src={imagePreview} alt="Wedding preview" />
+                        <div className="preview-overlay">
+                          <label htmlFor="image-upload" className="change-photo-btn">
+                            Change Photo
+                          </label>
+                        </div>
+                      </div>
+                      <div className="preview-info">
+                        <svg className="check-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Photo uploaded successfully</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="action-bar">
+                  <button
+                    className="btn btn-primary btn-large"
+                    onClick={handleNext}
+                    disabled={!uploadedImage}
+                  >
+                    Continue to Customization
+                    <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <div className="customization-section fade-in">
+                <div className="section-header">
+                  <button className="back-btn" onClick={handleBack}>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                  </button>
+                  <div>
+                    <h2>Customize Your Enhancement</h2>
+                    <p>Select options to create your perfect wedding photo</p>
                   </div>
-                  <h3>Drop your photo here</h3>
-                  <p>or click to browse</p>
-                  <span className="upload-hint">Supports: JPG, PNG, WEBP</span>
-                </label>
-              ) : (
-                <div className="preview-container">
-                  <div className="preview-card">
-                    <img src={imagePreview} alt="Wedding preview" />
-                    <div className="preview-overlay">
-                      <label htmlFor="image-upload" className="change-photo-btn">
-                        Change Photo
-                      </label>
+                </div>
+
+                <div className="customization-grid two-inputs">
+                  <div className="custom-select-wrapper">
+                    <label className="select-label">Theme Selection</label>
+                    <div className="select-container">
+                      <select
+                        value={selectedOptions.theme}
+                        onChange={(e) => handleOptionChange('theme', e.target.value)}
+                        className="custom-select"
+                      >
+                        <option value="">Choose a theme atmosphere</option>
+                        {themeCategories.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label} — {option.description}
+                          </option>
+                        ))}
+                      </select>
+                      <svg className="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </div>
-                  <div className="preview-info">
-                    <svg className="check-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Photo uploaded successfully</span>
+
+                  <div className="custom-select-wrapper">
+                    <label className="select-label">Lighting Selection</label>
+                    <div className="select-container">
+                      <select
+                        value={selectedOptions.lighting}
+                        onChange={(e) => handleOptionChange('lighting', e.target.value)}
+                        className="custom-select"
+                      >
+                        <option value="">Choose a lighting mood</option>
+                        {lightingOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label} — {option.description}
+                          </option>
+                        ))}
+                      </select>
+                      <svg className="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
 
-            <div className="action-bar">
-              <button
-                className="btn btn-primary btn-large"
-                onClick={handleNext}
-                disabled={!uploadedImage}
-              >
-                Continue to Customization
-                <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 2 && (
-          <div className="customization-section fade-in">
-            <div className="section-header">
-              <button className="back-btn" onClick={handleBack}>
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Back
-              </button>
-              <div>
-                <h2>Customize Your Enhancement</h2>
-                <p>Select options to create your perfect wedding photo</p>
-              </div>
-            </div>
-
-            <div className="customization-grid two-inputs">
-              <div className="custom-select-wrapper">
-                <label className="select-label">Theme Selection</label>
-                <div className="select-container">
-                  <select
-                    value={selectedOptions.theme}
-                    onChange={(e) => handleOptionChange('theme', e.target.value)}
-                    className="custom-select"
-                  >
-                    <option value="">Choose a theme atmosphere</option>
-                    {themeCategories.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label} — {option.description}
-                      </option>
-                    ))}
-                  </select>
-                  <svg className="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="custom-select-wrapper">
-                <label className="select-label">Lighting Selection</label>
-                <div className="select-container">
-                  <select
-                    value={selectedOptions.lighting}
-                    onChange={(e) => handleOptionChange('lighting', e.target.value)}
-                    className="custom-select"
-                  >
-                    <option value="">Choose a lighting mood</option>
-                    {lightingOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label} — {option.description}
-                      </option>
-                    ))}
-                  </select>
-                  <svg className="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="selection-details">
-              <div className="detail-card">
-                <h4>Theme categories</h4>
-                <ul>
-                  {themeCategories.map(option => (
-                    <li key={option.value}>
-                      <strong>{option.label}</strong>
-                      <span>{option.description}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="detail-card">
-                <h4>Lighting moods</h4>
-                <ul>
-                  {lightingOptions.map(option => (
-                    <li key={option.value}>
-                      <strong>{option.label}</strong>
-                      <span>{option.description}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="prompt-preview-card">
-              <div className="prompt-header">
-                <h3>AI Prompt Preview</h3>
-                <div className="selection-badge">
-                  {selectedCount} / 2 selected
-                </div>
-              </div>
-              <div className="prompt-content">
-                {generatePrompt() || (
-                  <div className="prompt-placeholder">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p>Select customization options above to preview your AI enhancement prompt</p>
+                <div className="selection-details">
+                  <div className="detail-card">
+                    <h4>Theme categories</h4>
+                    <ul>
+                      {themeCategories.map(option => (
+                        <li key={option.value}>
+                          <strong>{option.label}</strong>
+                          <span>{option.description}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                )}
-              </div>
-            </div>
+                  <div className="detail-card">
+                    <h4>Lighting moods</h4>
+                    <ul>
+                      {lightingOptions.map(option => (
+                        <li key={option.value}>
+                          <strong>{option.label}</strong>
+                          <span>{option.description}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-            <div className="action-bar">
-              <button className="btn btn-secondary" onClick={resetApp}>
-                <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Start Over
-              </button>
-              <button
-                className="btn btn-primary btn-large"
-                onClick={handleGenerate}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <div className="spinner"></div>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    Generate Enhanced Photo
+                <div className="prompt-preview-card">
+                  <div className="prompt-header">
+                    <h3>AI Prompt Preview</h3>
+                    <div className="selection-badge">
+                      {selectedCount} / 2 selected
+                    </div>
+                  </div>
+                  <div className="prompt-content">
+                    {generatePrompt() || (
+                      <div className="prompt-placeholder">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>Select customization options above to preview your AI enhancement prompt</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="action-bar">
+                  <button className="btn btn-secondary" onClick={resetApp}>
                     <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 3 && generatedImage && (
-          <div className="result-section fade-in">
-            <div className="success-banner">
-              <div className="success-icon">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h2>Enhancement Complete!</h2>
-                <p>{note}</p>
-              </div>
-            </div>
-
-            <div className="comparison-container">
-              <div className="comparison-card">
-                <div className="image-box">
-                  <div className="image-label">Original</div>
-                  <img src={imagePreview} alt="Original wedding" />
-                </div>
-                <div className="comparison-divider">
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </div>
-                <div className="image-box">
-                  <div className="image-label enhanced">Enhanced</div>
-                  <img src={generatedImage} alt="AI enhanced wedding" />
+                    Start Over
+                  </button>
+                  <button
+                    className="btn btn-primary btn-large"
+                    onClick={handleGenerate}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        Generate Enhanced Photo
+                        <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="analysis-card">
-              <h3>Enhancement Summary</h3>
-              <div className="analysis-content">{analysis}</div>
-            </div>
+            {currentStep === 3 && generatedImage && (
+              <div className="result-section fade-in">
+                <div className="success-banner">
+                  <div className="success-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2>Enhancement Complete!</h2>
+                    <p>{note}</p>
+                  </div>
+                </div>
 
-            <div className="action-bar">
-              <button className="btn btn-secondary" onClick={resetApp}>
-                <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Enhance Another Photo
-              </button>
-              <a
-                href={generatedImage}
-                download="enhanced-wedding-photo.jpg"
-                className="btn btn-primary"
-              >
-                <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download Enhanced Photo
-              </a>
-            </div>
-          </div>
+                <div className="comparison-container">
+                  <div className="comparison-card">
+                    <div className="image-box">
+                      <div className="image-label">Original</div>
+                      <img src={imagePreview} alt="Original wedding" />
+                    </div>
+                    <div className="comparison-divider">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </div>
+                    <div className="image-box">
+                      <div className="image-label enhanced">Enhanced</div>
+                      <img src={generatedImage} alt="AI enhanced wedding" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="analysis-card">
+                  <h3>Enhancement Summary</h3>
+                  <div className="analysis-content">{analysis}</div>
+                </div>
+
+                <div className="action-bar">
+                  <button className="btn btn-secondary" onClick={resetApp}>
+                    <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Enhance Another Photo
+                  </button>
+                  <a
+                    href={generatedImage}
+                    download="enhanced-wedding-photo.jpg"
+                    className="btn btn-primary"
+                  >
+                    <svg className="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download Enhanced Photo
+                  </a>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
